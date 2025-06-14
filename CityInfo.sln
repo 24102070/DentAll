@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "CityInfo.API\API.csproj", "{1FD683E0-0E2F-4665-ADA6-54F22032FAFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentAllBlazor", "DentAllBlazor\DentAllBlazor.csproj", "{06CF302F-36B2-4B31-B03A-DC07F72AE76F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FD683E0-0E2F-4665-ADA6-54F22032FAFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FD683E0-0E2F-4665-ADA6-54F22032FAFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FD683E0-0E2F-4665-ADA6-54F22032FAFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FD683E0-0E2F-4665-ADA6-54F22032FAFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06CF302F-36B2-4B31-B03A-DC07F72AE76F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06CF302F-36B2-4B31-B03A-DC07F72AE76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06CF302F-36B2-4B31-B03A-DC07F72AE76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06CF302F-36B2-4B31-B03A-DC07F72AE76F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6CD8AA5-48F1-4C23-8221-01105DE75546}
+	EndGlobalSection
+EndGlobal

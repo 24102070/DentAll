@@ -1,0 +1,79 @@
+﻿@page "/Create"
+@inject HttpClient http
+@using DentAllBlazor.Models
+@inject NavigationManager navManager
+@using System.Text.Json.Nodes;
+
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="text-center">New Patient</h1>
+
+        <div class="mb-3">
+            <label>First Name:</label>
+            <InputText @bind-Value="PatientData.FirstName" class="form-control" />
+            <span class="text-danger">@Errors["FirstName"]?[0]</span>
+        </div>
+
+        <div class="mb-3">
+            <label>Last Name:</label>
+            <InputText @bind-Value="PatientData.LastName" class="form-control" />
+            <span class="text-danger">@Errors["LastName"]?[0]</span>
+        </div>
+
+        <div class="mb-3">
+            <label>Email:</label>
+            <InputText @bind-Value="PatientData.Email" class="form-control" />
+            <span class="text-danger">@Errors["Email"]?[0]</span>
+        </div>
+
+        <div class="mb-3">
+            <label>Phone:</label>
+            <InputText @bind-Value="PatientData.Phone" class="form-control" />
+            <span class="text-danger">@Errors["Phone"]?[0]</span>
+        </div>
+
+        <div class="mb-3">
+            <label>Address:</label>
+            <InputText @bind-Value="PatientData.Address" class="form-control" />
+            <span class="text-danger">@Errors["Address"]?[0]</span>
+        </div>
+
+        <div class="mb-3">
+            <label>Status:</label>
+            <select @bind="PatientData.Status" class="form-control">
+                <option value="New Patient">New Patient</option>
+                <option value="Existing Patient">Existing Patient</option>
+            </select>
+            <span class="text-danger">@Errors["Status"]?[0]</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" @onclick="SavePatient">Save</button>
+        <a class="btn btn-danger" href= "/Patients">Cancel</a>
+    </div>
+</div>
+
+@code {
+    public PatientDto PatientData { get; set; } = new();
+    public JsonNode Errors { get; set; } = new JsonObject();
+
+    protected async Task SavePatient()
+    {
+        var response = await http.PostAsJsonAsync("https://localhost:7085/api/Patient", PatientData);
+
+        if (response.IsSuccessStatusCode)
+        {
+            navManager.NavigateTo("/Patients");
+        }
+        else {
+            var strResponse = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var jsonResponse = JsonNode.Parse(strResponse);
+                Errors = jsonResponse?["errors"] ?? new JsonObject();
+            }
+            catch(Exception ex) { 
+            
+            }
+        }
+    }
+}

@@ -1,0 +1,125 @@
+﻿@page "/EditPatient/{Id:int}"
+@inject HttpClient http;
+@inject NavigationManager navManager;
+@using DentAllBlazor.Models;
+@using System.Text.Json.Nodes;
+<h3>Edit Patient</h3>
+
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="text-center">New Patient</h1>
+
+        <div class="mb-3">
+            <label>First Name:</label>
+            <InputText @bind-Value="PatientData.FirstName" class="form-control" />
+            
+        </div>
+
+        <div class="mb-3">
+            <label>Last Name:</label>
+            <InputText @bind-Value="PatientData.LastName" class="form-control" />
+           
+        </div>
+
+        <div class="mb-3">
+            <label>Email:</label>
+            <InputText @bind-Value="PatientData.Email" class="form-control" />
+            
+        </div>
+
+        <div class="mb-3">
+            <label>Phone:</label>
+            <InputText @bind-Value="PatientData.Phone" class="form-control" />
+          
+        </div>
+
+        <div class="mb-3">
+            <label>Address:</label>
+            <InputText @bind-Value="PatientData.Address" class="form-control" />
+           
+        </div>
+
+        <div class="mb-3">
+            <label>Status:</label>
+            <select @bind="PatientData.Status" class="form-control">
+                <option value="New Patient">New Patient</option>
+                <option value="Existing Patient">Existing Patient</option>
+            </select>
+            
+        </div>
+
+        <button type="submit" class="btn btn-primary" @onclick="SavePatient">Save</button>
+        <a class="btn btn-danger" href="/Patients">Cancel</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public Patient? patient { get; set; }
+    public PatientDto PatientData { get; set; } = new PatientDto();
+    public JsonNode Errors { get; set; } = new JsonObject();
+
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var patient = await http.GetFromJsonAsync<Patient>("https://localhost:7085/api/Patient/" + Id);
+
+            if (patient != null)
+            {
+                PatientData.FirstName = patient.FirstName;
+                PatientData.LastName = patient.LastName;
+                PatientData.Email = patient.Email;
+                PatientData.Phone = patient.Phone;
+                PatientData.Address = patient.Address;
+                PatientData.Status = patient.Status;
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching patient: {ex.Message}");
+
+        }
+    }
+
+    protected async Task SavePatient()
+    {
+        Patient updatedPatient = new Patient
+            {
+                Id = Id,
+                FirstName = PatientData.FirstName,
+                LastName = PatientData.LastName,
+                Email = PatientData.Email,
+                Phone = PatientData.Phone,
+                Address = PatientData.Address,
+                Status = PatientData.Status
+            };
+
+        var response = await http.PutAsJsonAsync("https://localhost:7085/api/Patient/" + Id, updatedPatient);
+        if (response.IsSuccessStatusCode)
+        {
+            navManager.NavigateTo("/Patients");
+        }
+        else
+        {
+            var strResponse = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var jsonResponse = JsonNode.Parse(strResponse);
+                Errors = jsonResponse?["errors"] ?? new JsonObject();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+       
+
+    }
+
+
+}

@@ -1,0 +1,114 @@
+﻿@page "/Patients"
+@inject HttpClient Http;
+@using DentAllBlazor.Models;
+@inject NavigationManager navManager;
+
+<h1 class="text-center mb-3">List of Patients</h1>
+<a class="btn btn-primary mb-3" href="/Create">Add Patient</a>
+@if (patients == null)
+{
+    <p>Loading patients...</p>
+}
+else if (patients.Count == 0)
+{
+    <p>No patients found.</p>
+}else{
+<div class="container">
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            @foreach (var patient in patients)
+            {
+                <tr>
+                    <td>@patient.Id</td>
+                <td>@(patient.FirstName + " " + patient.LastName)</td>
+                <td>@patient.Email</td>
+                <td>@patient.Phone</td>
+                <td>@patient.Address</td>
+                <td>@patient.Status</td>
+                <td>@patient.CreatedAt.ToShortDateString()</td>
+                <td style="white-space: nowrap">
+                        <a class="btn btn-primary mb-3" href="/EditPatient/@patient.Id">Edit</a>
+                        <button class="btn btn-danger mb-3" @onclick ="() => ShowDeleteModal(patient.Id)">Delete</button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+   </div>
+
+   }
+
+@if (showDeleteModal)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete patient with Id <strong>@selectedPatientId</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">Delete</button>
+                    <button class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Patient>? patients;
+    private bool showDeleteModal = false;
+    private int selectedPatientId;
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await Http.GetFromJsonAsync<List<Patient>>("https://localhost:7085/api/Patient");
+
+    }
+    private void ShowDeleteModal(int id)
+    {
+        selectedPatientId = id;
+        showDeleteModal = true;
+    }
+
+    protected async Task ConfirmDelete()
+    {
+        var response = await Http.DeleteAsync("https://localhost:7085/api/Patient/" + selectedPatientId);
+        if (response.IsSuccessStatusCode)
+        {
+            var patientToRemove = patients?.FirstOrDefault(p => p.Id == selectedPatientId);
+            if (patientToRemove != null)
+            {
+                patients!.Remove(patientToRemove);
+            }
+            CloseModal();
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete patient.");
+        }
+    }
+
+    private void CloseModal()
+    {
+        showDeleteModal = false;
+        selectedPatientId = 0;
+    }
+}
